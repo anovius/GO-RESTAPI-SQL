@@ -2,15 +2,13 @@ package config
 
 import (
 	"database/sql"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 func Connect() *sql.DB {
-	dbDriver := "mysql"
-	dbUser := "root"
-	dbPass := ""
-	dbName := "golang"
 
-	db, err := sql.Open(dbDriver, dbUser+":"+dbPass+"@/"+dbName)
+	db, err := sql.Open("mysql", "root:@tcp(localhost:3306)/golang?parseTime=true")
 	if err != nil {
 		panic(err.Error())
 	}

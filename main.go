@@ -2,16 +2,15 @@ package main
 
 import (
 	"fmt"
-	"restapi/model"
+	"net/http"
+	"restapi/controller"
+
+	"github.com/gorilla/mux"
 )
 
 func main() {
-
-	todo := model.Todo{
-		ID:     1,
-		Body:   "Hello World",
-		Status: "Done",
-	}
-
-	fmt.Println(todo.Body)
+	router := mux.NewRouter()
+	router.HandleFunc("/", controller.GetAll).Methods("GET")
+	fmt.Println("Server is running on port 3000")
+	http.ListenAndServe(":3000", router)
 }
