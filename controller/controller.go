@@ -5,6 +5,9 @@ import (
 	"net/http"
 	"restapi/config"
 	"restapi/model"
+	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
 // Get All Todo's
@@ -71,6 +74,29 @@ func ChangeStatus(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, err = stmt.Exec(todo.Status, todo.ID)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode("success")
+}
+
+//delete todo
+
+func Delete(w http.ResponseWriter, r *http.Request) {
+
+	id, _ := strconv.Atoi(mux.Vars(r)["id"])
+
+	db := config.Connect()
+	defer db.Close()
+
+	stmt, err := db.Prepare("DELETE FROM todos WHERE id = ?")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	_, err = stmt.Exec(id)
 	if err != nil {
 		panic(err.Error())
 	}
