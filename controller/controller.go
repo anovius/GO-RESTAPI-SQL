@@ -55,3 +55,26 @@ func Create(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode("success")
 }
+
+//change todo status
+
+func ChangeStatus(w http.ResponseWriter, r *http.Request) {
+	db := config.Connect()
+	defer db.Close()
+
+	var todo model.Todo
+	_ = json.NewDecoder(r.Body).Decode(&todo)
+
+	stmt, err := db.Prepare("UPDATE todos SET status = ? WHERE id = ?")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	_, err = stmt.Exec(todo.Status, todo.ID)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode("success")
+}
