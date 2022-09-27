@@ -32,3 +32,26 @@ func GetAll(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(todos)
 }
+
+// Create Todo
+
+func Create(w http.ResponseWriter, r *http.Request) {
+	db := config.Connect()
+	defer db.Close()
+
+	var todo model.Todo
+	_ = json.NewDecoder(r.Body).Decode(&todo)
+
+	stmt, err := db.Prepare("INSERT INTO todos(body) VALUES(?)")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	_, err = stmt.Exec(todo.Body)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode("success")
+}
