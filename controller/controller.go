@@ -36,6 +36,26 @@ func GetAll(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(todos)
 }
 
+//Get one
+
+func GetOne(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	db := config.Connect()
+	defer db.Close()
+
+	id, _ := strconv.Atoi(mux.Vars(r)["id"])
+
+	var todo model.Todo
+
+	row := db.QueryRow("SELECT * FROM todos WHERE id = ?", id)
+	err := row.Scan(&todo.ID, &todo.Body, &todo.Status)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	json.NewEncoder(w).Encode(todo)
+}
+
 // Create Todo
 
 func Create(w http.ResponseWriter, r *http.Request) {
